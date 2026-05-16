@@ -9,7 +9,7 @@ export const getTomorrowDemand = async () => {
     weekday: "long",
   });
 
-  // 📦 DIRECT ORDERS
+  //  DIRECT ORDERS
   const directOrders = await Order.find({
     deliveryDate: {
       $gte: new Date(tomorrow.setHours(0, 0, 0, 0)),
@@ -17,7 +17,7 @@ export const getTomorrowDemand = async () => {
     },
   });
 
-  // 🔁 SUBSCRIPTIONS
+  //  SUBSCRIPTIONS
   const subscriptions = await Subscription.find({
     isActive: true,
     $or: [
@@ -27,7 +27,7 @@ export const getTomorrowDemand = async () => {
     isPaused: false,
   });
 
-  // 🧮 TOTAL CALCULATION
+  //  TOTAL CALCULATION
   let total = 0;
 
   directOrders.forEach((o) => {
