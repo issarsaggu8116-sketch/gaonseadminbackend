@@ -6,27 +6,27 @@ export const getDashboard = async (req, res) => {
   try {
     const cityId = req.user.city;
 
-    // 🗓️ TODAY RANGE
+    //  TODAY RANGE
     const start = new Date();
     start.setHours(0, 0, 0, 0);
 
     const end = new Date();
     end.setHours(23, 59, 59, 999);
 
-    // 📦 TODAY ORDERS
+    //  TODAY ORDERS
     const todayOrders = await Order.countDocuments({
       "address.city._id": cityId.toString(),
       createdAt: { $gte: start, $lte: end },
       status: { $ne: "cancelled" },
     });
 
-    // 🔁 ACTIVE SUBSCRIPTIONS
+    //  ACTIVE SUBSCRIPTIONS
     const activeSubscriptions = await Subscription.countDocuments({
       city: cityId,
       isActive: true,
     });
 
-    // 🥛 TOMORROW MILK CALCULATION
+    //  TOMORROW MILK CALCULATION
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
 
@@ -57,7 +57,7 @@ export const getDashboard = async (req, res) => {
       }
     });
 
-    // 📦 STOCK LEFT (SUM OF PRODUCTS)
+    // STOCK LEFT (SUM OF PRODUCTS)
     const products = await Product.find({ city: cityId });
 
     let stockLeft = 0;
