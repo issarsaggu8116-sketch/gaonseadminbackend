@@ -1,7 +1,7 @@
 import { Order } from "../models/Order.js";
 import { Product } from "../models/Product.js";
 
-// 🎯 COMMON CITY FILTER
+//  COMMON CITY FILTER
 const getCityFilter = (city) => ({
   $or: [
     { "address.city": city },
@@ -10,7 +10,7 @@ const getCityFilter = (city) => ({
 });
 
 
-// 📦 GET PENDING ORDERS BY ADMIN CITY
+//  GET PENDING ORDERS BY ADMIN CITY
 export const getPendingOrders = async (req, res) => {
   try {
     
@@ -35,7 +35,7 @@ export const getPendingOrders = async (req, res) => {
 };
 
 
-// ✅ APPROVE ORDER + STOCK DEDUCTION
+//  APPROVE ORDER + STOCK DEDUCTION
 export const approveOrder = async (req, res) => {
   try {
     const adminCity = req.user.city;
@@ -55,7 +55,7 @@ export const approveOrder = async (req, res) => {
       });
     }
 
-    // 🧠 STEP 1: CHECK STOCK
+    //  STEP 1: CHECK STOCK
     for (let item of order.items) {
       const product = await Product.findById(item._id);
 
@@ -72,7 +72,7 @@ export const approveOrder = async (req, res) => {
       }
     }
 
-    // 🧠 STEP 2: DEDUCT STOCK (SAFE)
+    //  STEP 2: DEDUCT STOCK (SAFE)
     for (let item of order.items) {
       const updated = await Product.findOneAndUpdate(
         {
@@ -91,16 +91,16 @@ export const approveOrder = async (req, res) => {
       }
     }
 
-    // ✅ STEP 3: UPDATE ORDER
+    //  STEP 3: UPDATE ORDER
     order.status = "approved";
     await order.save();
 
-    // 🔔 REALTIME
+    //  REALTIME
     req.io?.emit("orderApproved", order);
 
     res.json({
       success: true,
-      message: "Order Approved & Stock Updated ✅",
+      message: "Order Approved & Stock Updated ",
       order,
     });
   } catch (err) {
@@ -110,7 +110,7 @@ export const approveOrder = async (req, res) => {
 };
 
 
-// ❌ CANCEL ORDER
+// CANCEL ORDER
 export const cancelOrder = async (req, res) => {
   try {
     const adminCity = req.user.city;
@@ -133,12 +133,12 @@ export const cancelOrder = async (req, res) => {
     order.status = "cancelled";
     await order.save();
 
-    // 🔔 REALTIME
+    //  REALTIME
     req.io?.emit("orderCancelled", order);
 
     res.json({
       success: true,
-      message: "Order Cancelled ❌",
+      message: "Order Cancelled ",
       order,
     });
   } catch (err) {
