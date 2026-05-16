@@ -3,7 +3,7 @@ import { DeliveryPartner } from "../models/DeliveryPartner.js";
 import { Zone } from "../models/Zone.js";
 
 //
-// ➕ CREATE DELIVERY PARTNER
+//  CREATE DELIVERY PARTNER
 //
 export const createDeliveryPartner = async (req, res) => {
   try {
@@ -44,7 +44,7 @@ export const createDeliveryPartner = async (req, res) => {
 };
 
 //
-// 🔐 LOGIN
+//  LOGIN
 //
 export const loginDeliveryPartner = async (req, res) => {
   try {
@@ -94,7 +94,7 @@ export const loginDeliveryPartner = async (req, res) => {
 };
 
 //
-// 📃 GET PARTNERS
+//  GET PARTNERS
 //
 export const getDeliveryPartners = async (req, res) => {
   try {
@@ -109,7 +109,7 @@ export const getDeliveryPartners = async (req, res) => {
 };
 
 //
-// 🔄 TOGGLE ACTIVE
+//  TOGGLE ACTIVE
 //
 export const toggleDeliveryStatus = async (req, res) => {
   try {
@@ -133,7 +133,7 @@ export const toggleDeliveryStatus = async (req, res) => {
 };
 
 //
-// ❌ DELETE
+//  DELETE
 //
 export const deleteDeliveryPartner = async (req, res) => {
   try {
