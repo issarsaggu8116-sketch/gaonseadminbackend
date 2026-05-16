@@ -2,20 +2,23 @@ import { app } from "./app.js";
 import { createServer } from "http";
 import { Server } from "socket.io";
 
+const PORT = process.env.PORT || 5000;
 
+// ✅ Create HTTP server
 const server = createServer(app);
 
-// 🔌 SOCKET SERVER
+// ✅ Socket.IO setup
 export const io = new Server(server, {
   cors: {
     origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
   },
 });
 
-// ✅ NOW assign AFTER creation
+// ✅ Make globally accessible
 global.io = io;
 
-// 🌐 SOCKET CONNECTION
+// ✅ Socket connection
 io.on("connection", (socket) => {
   console.log("⚡ Admin connected:", socket.id);
 
@@ -30,6 +33,7 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(process.env.PORT, () => {
-  console.log(`🚀 Admin Server running on port ${process.env.PORT}`);
+// ✅ Start server
+server.listen(PORT, () => {
+  console.log(`🚀 Admin Server running on port ${PORT}`);
 });
