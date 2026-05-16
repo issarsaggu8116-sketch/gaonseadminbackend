@@ -23,7 +23,7 @@ export const isDeliveryAuth = async (req, res, next) => {
 
     req.partner = partner;
 
-    next(); // ✅ THIS IS IMPORTANT
+    next(); //  THIS IS IMPORTANT
   } catch (err) {
     console.log("Auth Error:", err.message);
     res.status(401).json({ message: "Unauthorized" });
