@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import "../models/City.js";
 
-// 🔐 LOGIN ADMIN
+// LOGIN ADMIN
 export const adminLogin = async (req, res) => {
   console.log("route hit");
 
