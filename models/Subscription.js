@@ -83,7 +83,7 @@ const subscriptionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// 🔥 CUSTOM VALIDATION
+//  CUSTOM VALIDATION
 subscriptionSchema.pre("validate", function (next) {
   if (this.type === "days" && (!this.days || this.days.length === 0)) {
     return next(new Error("Please select days"));
