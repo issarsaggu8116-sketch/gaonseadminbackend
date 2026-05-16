@@ -12,12 +12,12 @@ import { isAuthenticated } from "../middlewares/auth.js";
 const router = express.Router();
 
 //
-// 🔐 DELIVERY LOGIN (NO AUTH)
+//  DELIVERY LOGIN (NO AUTH)
 //
 router.post("/login", loginDeliveryPartner);
 
 //
-// 🛠 ADMIN ROUTES
+//  ADMIN ROUTES
 //
 router.post("/create", isAuthenticated, createDeliveryPartner);
 router.get("/", isAuthenticated, getDeliveryPartners);
