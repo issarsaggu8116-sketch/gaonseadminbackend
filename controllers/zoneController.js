@@ -1,7 +1,7 @@
 import { Zone } from "../models/Zone.js";
 
 
-// ➕ CREATE ZONE
+//  CREATE ZONE
 export const createZone = async (req, res) => {
   try {
     const { name, center, radius } = req.body;
@@ -20,7 +20,7 @@ export const createZone = async (req, res) => {
 };
 
 
-// 📃 GET ALL ZONES (ADMIN CITY ONLY)
+//  GET ALL ZONES (ADMIN CITY ONLY)
 export const getZones = async (req, res) => {
   try {
     const zones = await Zone.find({ city: req.user.city });
@@ -32,7 +32,7 @@ export const getZones = async (req, res) => {
 };
 
 
-// ✏️ UPDATE ZONE
+//  UPDATE ZONE
 export const updateZone = async (req, res) => {
   try {
     const zone = await Zone.findById(req.params.id);
@@ -41,7 +41,7 @@ export const updateZone = async (req, res) => {
       return res.status(404).json({ message: "Zone not found" });
     }
 
-    // 🔒 CITY CHECK
+    //  CITY CHECK
     if (zone.city.toString() !== req.user.city.toString()) {
       return res.status(403).json({ message: "Access denied" });
     }
@@ -59,7 +59,7 @@ export const updateZone = async (req, res) => {
 };
 
 
-// ❌ DELETE ZONE
+//  DELETE ZONE
 export const deleteZone = async (req, res) => {
   try {
     const zone = await Zone.findById(req.params.id);
@@ -81,7 +81,7 @@ export const deleteZone = async (req, res) => {
 };
 
 
-// 🔄 TOGGLE ACTIVE
+//  TOGGLE ACTIVE
 export const toggleZoneStatus = async (req, res) => {
   try {
     const zone = await Zone.findById(req.params.id);
