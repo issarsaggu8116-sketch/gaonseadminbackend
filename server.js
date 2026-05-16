@@ -20,20 +20,20 @@ global.io = io;
 
 // ✅ Socket connection
 io.on("connection", (socket) => {
-  console.log("⚡ Admin connected:", socket.id);
+  console.log(" Admin connected:", socket.id);
 
   // Join city room
   socket.on("joinCity", (cityId) => {
     socket.join(cityId);
-    console.log(`📍 Joined city room: ${cityId}`);
+    console.log(` Joined city room: ${cityId}`);
   });
 
   socket.on("disconnect", () => {
-    console.log("❌ Admin disconnected:", socket.id);
+    console.log(" Admin disconnected:", socket.id);
   });
 });
 
-// ✅ Start server
+// Start server
 server.listen(PORT, () => {
-  console.log(`🚀 Admin Server running on port ${PORT}`);
+  console.log(` Admin Server running on port ${PORT}`);
 });
