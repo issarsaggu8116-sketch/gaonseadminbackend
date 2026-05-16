@@ -1,6 +1,6 @@
 import { Category } from "../models/Category.js";
 
-// ➕ CREATE CATEGORY
+//  CREATE CATEGORY
 export const createCategory = async (req, res) => {
   try {
     const { name, isSubscriptionAllowed } = req.body;
@@ -8,7 +8,7 @@ export const createCategory = async (req, res) => {
     const category = await Category.create({
       name,
       isSubscriptionAllowed,
-      city: req.user.city, // 🔥 auto assign
+      city: req.user.city, // auto assign
     });
 
     res.json({ success: true, category });
@@ -17,7 +17,7 @@ export const createCategory = async (req, res) => {
   }
 };
 
-// 📃 GET ALL CATEGORIES
+//  GET ALL CATEGORIES
 export const getCategories = async (req, res) => {
   try {
     const categories = await Category.find({
@@ -30,7 +30,7 @@ export const getCategories = async (req, res) => {
   }
 };
 
-// ✏️ UPDATE CATEGORY
+//  UPDATE CATEGORY
 export const updateCategory = async (req, res) => {
   try {
     const { name, isSubscriptionAllowed } = req.body;
@@ -55,7 +55,7 @@ export const updateCategory = async (req, res) => {
   }
 };
 
-// ❌ DELETE CATEGORY
+//  DELETE CATEGORY
 export const deleteCategory = async (req, res) => {
   try {
     const category = await Category.findById(req.params.id);
@@ -74,7 +74,7 @@ export const deleteCategory = async (req, res) => {
   }
 };
 
-// 🔄 TOGGLE ACTIVE
+//  TOGGLE ACTIVE
 export const toggleCategoryStatus = async (req, res) => {
   try {
     const category = await Category.findById(req.params.id);
