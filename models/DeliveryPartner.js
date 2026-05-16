@@ -41,7 +41,7 @@ const deliveryPartnerSchema = new mongoose.Schema(
 );
 
 //
-// 🔐 HASH PASSWORD (ASYNC STYLE - NO next)
+//  HASH PASSWORD (ASYNC STYLE - NO next)
 //
 deliveryPartnerSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
@@ -50,7 +50,7 @@ deliveryPartnerSchema.pre("save", async function () {
 });
 
 //
-// 🔑 COMPARE PASSWORD
+//  COMPARE PASSWORD
 //
 deliveryPartnerSchema.methods.comparePassword = async function (entered) {
   return await bcrypt.compare(entered, this.password);
