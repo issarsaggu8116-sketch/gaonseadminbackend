@@ -1,12 +1,12 @@
 import { Setting } from "../models/Setting.js";
 
 
-// 📃 GET SETTINGS
+//  GET SETTINGS
 export const getSettings = async (req, res) => {
   try {
     let setting = await Setting.findOne({ city: req.user.city });
 
-    // 🧠 auto create if not exist
+    //  auto create if not exist
     if (!setting) {
       setting = await Setting.create({
         city: req.user.city,
@@ -20,7 +20,7 @@ export const getSettings = async (req, res) => {
 };
 
 
-// ✏️ UPDATE SETTINGS
+//  UPDATE SETTINGS
 export const updateSettings = async (req, res) => {
   try {
     const { morningDeadline, eveningDeadline } = req.body;
