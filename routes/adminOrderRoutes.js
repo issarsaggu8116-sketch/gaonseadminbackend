@@ -9,10 +9,10 @@ import { isAuthenticated } from "../middlewares/auth.js";
 const router = express.Router();
 
 router.get("/test", (req, res) => {
-  console.log("💓 ADMIN ORDER TEST ROUTE HIT");
+  console.log(" ADMIN ORDER TEST ROUTE HIT");
   res.json({
     success: true,
-    message: "Admin Order route is working 🚀",
+    message: "Admin Order route is working ",
     time: new Date(),
   });
 });
