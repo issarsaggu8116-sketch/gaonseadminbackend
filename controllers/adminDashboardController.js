@@ -3,7 +3,7 @@ import { Product } from "../models/Product.js";
 // 📊 GET ALL PRODUCTS WITH CURRENT STOCK
 export const getDashboard = async (req, res) => {
   try {
-    const cityId = req.user.city;
+    const city = req.user.city;
     await console.log("route hitten")
 
     // 🥛 GET ALL PRODUCTS
