@@ -1,78 +1,73 @@
-import { Order } from "../models/Order.js";
-import { Subscription } from "../models/Subscription.js";
 import { Product } from "../models/Product.js";
 
+// 📊 GET ALL PRODUCTS WITH CURRENT STOCK
 export const getDashboard = async (req, res) => {
   try {
     const cityId = req.user.city;
 
-    //  TODAY RANGE
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
+    // 🥛 GET ALL PRODUCTS
+    const products = await Product.find({ city: cityId }).select(
+      "name currentStock"
+    );
 
-    const end = new Date();
-    end.setHours(23, 59, 59, 999);
+    // 📦 FORMAT RESPONSE
+    const productStockData = products.map((product) => ({
+      productId: product._id,
+      productName: product.name,
+      currentStock: product.currentStock || 0,
+    }));
 
-    //  TODAY ORDERS
-    const todayOrders = await Order.countDocuments({
-      "address.city._id": cityId.toString(),
-      createdAt: { $gte: start, $lte: end },
-      status: { $ne: "cancelled" },
-    });
-
-    //  ACTIVE SUBSCRIPTIONS
-    const activeSubscriptions = await Subscription.countDocuments({
-      city: cityId,
-      isActive: true,
-    });
-
-    //  TOMORROW MILK CALCULATION
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const dayName = tomorrow.toLocaleString("en-US", {
-      weekday: "short",
-    }); // Mon, Tue...
-
-    const dateNumber = tomorrow.getDate();
-
-    const subs = await Subscription.find({
-      city: cityId,
-      isActive: true,
-    });
-
-    let tomorrowMilk = 0;
-
-    subs.forEach((sub) => {
-      if (sub.type === "daily") {
-        tomorrowMilk += sub.quantity;
-      }
-
-      if (sub.type === "days" && sub.days.includes(dayName)) {
-        tomorrowMilk += sub.quantity;
-      }
-
-      if (sub.type === "dates" && sub.dates.includes(dateNumber)) {
-        tomorrowMilk += sub.quantity;
-      }
-    });
-
-    // STOCK LEFT (SUM OF PRODUCTS)
-    const products = await Product.find({ city: cityId });
-
-    let stockLeft = 0;
-    products.forEach((p) => {
-      stockLeft += p.currentStock || 0;
-    });
-
-    res.json({
-      todayOrders,
-      tomorrowMilk,
-      activeSubscriptions,
-      stockLeft,
+    res.status(200).json({
+      totalProducts: productStockData.length,
+      products: productStockData,
     });
   } catch (err) {
     console.log("Dashboard Error:", err.message);
-    res.status(500).json({ message: err.message });
+
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+
+// 🔄 RESET PARTICULAR PRODUCT STOCK
+export const resetProductStock = async (req, res) => {
+  try {
+    const { productId } = req.params;
+
+    // OPTIONAL:
+    // if you want custom stock value from frontend
+    // const { stock } = req.body;
+
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        message: "Product not found",
+      });
+    }
+
+    // RESET STOCK
+    product.currentStock = 0;
+
+    // OR CUSTOM VALUE
+    // product.currentStock = stock;
+
+    await product.save();
+
+    res.status(200).json({
+      message: "Product stock reset successfully",
+      product: {
+        productId: product._id,
+        productName: product.name,
+        currentStock: product.currentStock,
+      },
+    });
+  } catch (err) {
+    console.log("Reset Stock Error:", err.message);
+
+    res.status(500).json({
+      message: err.message,
+    });
   }
 };
