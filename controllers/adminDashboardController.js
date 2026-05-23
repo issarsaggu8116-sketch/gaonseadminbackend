@@ -1,26 +1,15 @@
 import { Product } from "../models/Product.js";
 
 // 📊 GET ALL PRODUCTS WITH CURRENT STOCK
-export const getDashboard = async (req, res) => {
+export const getDashboard = async (
+  req,
+  res
+) => {
   try {
     console.log("Dashboard route hit");
 
-    // ✅ CHECK USER
-    if (!req.user) {
-      return res.status(401).json({
-        message: "Unauthorized - req.user missing",
-      });
-    }
-
-    // ✅ GET CITY
-    const cityId =
-      req.user.city?._id || req.user.city;
-
-    if (!cityId) {
-      return res.status(400).json({
-        message: "City not found",
-      });
-    }
+    // ✅ CITY
+    const cityId = req.user.city;
 
     // 🥛 GET ALL PRODUCTS
     const products = await Product.find({
@@ -28,14 +17,13 @@ export const getDashboard = async (req, res) => {
     }).select("name currentStock");
 
     // 📦 FORMAT RESPONSE
-    const productStockData = products.map(
-      (product) => ({
+    const productStockData =
+      products.map((product) => ({
         productId: product._id,
         productName: product.name,
         currentStock:
           product.currentStock || 0,
-      })
-    );
+      }));
 
     res.status(200).json({
       totalProducts:
@@ -74,10 +62,6 @@ export const resetProductStock = async (
 
     // ✅ RESET STOCK
     product.currentStock = 100;
-
-    // OPTIONAL CUSTOM VALUE
-    // const { stock } = req.body;
-    // product.currentStock = stock;
 
     await product.save();
 
