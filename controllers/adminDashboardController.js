@@ -4,6 +4,7 @@ import { Product } from "../models/Product.js";
 export const getDashboard = async (req, res) => {
   try {
     const cityId = req.user.city;
+    await console.log("route hitten")
 
     // 🥛 GET ALL PRODUCTS
     const products = await Product.find({ city: cityId }).select(
