@@ -48,7 +48,7 @@ export const resetProductStock = async (req, res) => {
     }
 
     // RESET STOCK
-    product.currentStock = 0;
+    product.currentStock = 100;
 
     // OR CUSTOM VALUE
     // product.currentStock = stock;
