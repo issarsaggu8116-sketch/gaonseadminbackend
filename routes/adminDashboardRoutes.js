@@ -2,7 +2,7 @@ import express from "express";
 import {
   getDashboard,
   resetProductStock,
-} from "../controllers/dashboardController.js";
+} from "../controllers/adminDashboardController.js";
 
 const router = express.Router();
 
