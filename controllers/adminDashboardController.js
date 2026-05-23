@@ -60,17 +60,31 @@ export const resetProductStock = async (
       });
     }
 
-    // ✅ RESET STOCK
-    product.currentStock = 10;
+    // ✅ CHECK STOCK LIMIT
+    if (
+      product.stockLimit === undefined ||
+      product.stockLimit === null
+    ) {
+      return res.status(400).json({
+        message:
+          "Stock limit not set for this product",
+      });
+    }
+
+    // ✅ RESTOCK TO MAX LIMIT
+    product.currentStock =
+      product.stockLimit;
 
     await product.save();
 
     res.status(200).json({
       message:
-        "Product stock reset successfully",
+        "Product restocked successfully",
       product: {
         productId: product._id,
         productName: product.name,
+        stockLimit:
+          product.stockLimit,
         currentStock:
           product.currentStock,
       },
