@@ -7,9 +7,9 @@ import {
 const router = express.Router();
 
 // 📊 GET ALL PRODUCTS STOCK
-router.get("/dashboard",isAuthenticated, getDashboard);
+router.get("/dashboard", getDashboard);
 
 // 🔄 RESET PARTICULAR PRODUCT STOCK
-router.put("/reset-stock/:productId",isAuthenticated, resetProductStock);
+router.put("/reset-stock/:productId", resetProductStock);
 
 export default router;
