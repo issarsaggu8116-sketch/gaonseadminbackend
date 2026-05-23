@@ -61,7 +61,7 @@ export const resetProductStock = async (
     }
 
     // ✅ RESET STOCK
-    product.currentStock = 100;
+    product.currentStock = 10;
 
     await product.save();
 
