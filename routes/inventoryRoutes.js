@@ -5,13 +5,14 @@ import {
   resetInventory,
   getInventory,
 } from "../controllers/inventoryController.js";
+import { isAuthenticated } from "../middlewares/auth.js";
 
 const router = express.Router();
 
 /* FETCH ALL INVENTORY */
-router.get("/", getInventory);
+router.get("/", isAuthenticated, getInventory);
 
 /*  RESET INVENTORY */
-router.put("/reset", resetInventory);
+router.put("/reset", isAuthenticated, resetInventory);
 
 export default router;

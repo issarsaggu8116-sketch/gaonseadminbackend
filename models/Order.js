@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema(
   {
-    users: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 
     items: [
       {
@@ -17,6 +17,9 @@ const orderSchema = new mongoose.Schema(
       city: Object,
       zone: Object,
       text: String,
+
+      latitude: Number,
+      longitude: Number,
     },
 
     total: Number,
@@ -29,7 +32,29 @@ const orderSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["pending", "approved", "out_for_delivery", "delivered", "cancelled", "expired",],
+      enum: [
+        "pending",
+        "approved",
+        "out_for_delivery",
+        "delivered",
+        "cancelled",
+        "expired",
+      ],
+      default: "pending",
+    },
+
+    otp: Number,
+    otpExpire: Date,
+
+    deliveredBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "DeliveryPartner",
+      default: null,
+    },
+    deliveredAt: Date,
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid", "failed"],
       default: "pending",
     },
 

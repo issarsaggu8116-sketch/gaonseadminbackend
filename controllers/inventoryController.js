@@ -1,14 +1,19 @@
 // controllers/inventoryController.js
 
 import { Inventory } from "../models/Inventory.js";
+import { Product } from "../models/Product.js";
 
 /* =====================================
    RESET INVENTORY
 ===================================== */
 export const resetInventory = async (req, res) => {
   try {
+    const adminCity = req.user.city;
+    const products = await Product.find({ city: adminCity }).select("_id");
+    const productIds = products.map((p) => p._id.toString());
+
     await Inventory.updateMany(
-      {},
+      { productId: { $in: productIds } },
       {
         $set: {
           todayDemand: 0,
@@ -36,7 +41,13 @@ export const resetInventory = async (req, res) => {
 ===================================== */
 export const getInventory = async (req, res) => {
   try {
-    const inventory = await Inventory.find().sort({
+    const adminCity = req.user.city;
+    const products = await Product.find({ city: adminCity }).select("_id");
+    const productIds = products.map((p) => p._id.toString());
+
+    const inventory = await Inventory.find({
+      productId: { $in: productIds }
+    }).sort({
       todayDemand: -1,
       totalDemand: -1,
     });

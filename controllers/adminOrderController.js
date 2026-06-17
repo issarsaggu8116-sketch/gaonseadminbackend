@@ -19,10 +19,9 @@ export const getPendingOrders = async (req, res) => {
       ...getCityFilter(adminCity),
       status: "pending",
     })
-      .populate("users", "name phone")
+      .populate("user", "name phone")
       .sort({ createdAt: -1 });
     
-     console.log(adminCity,"ff",req.user.city,orders)
     res.json({
       success: true,
       count: orders.length,

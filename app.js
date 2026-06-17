@@ -4,6 +4,9 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db.js";
 
+// Ensure all models are registered
+import "./models/User.js";
+import "./models/Subscription.js";
 
 import zoneRoutes from "./routes/zoneRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";

@@ -82,6 +82,7 @@ export const updateProduct = async (req, res) => {
         img_url,
         category,
         stockLimit: stock,
+        currentStock: stock,
         isActive,
       },
       { new: true }

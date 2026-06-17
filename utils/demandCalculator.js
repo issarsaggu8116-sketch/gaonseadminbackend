@@ -1,5 +1,5 @@
-import { Order } from "../models/order.js";
-import { Subscription } from "../models/subscriptionModel.js";
+import { Order } from "../models/Order.js";
+import { Subscription } from "../models/Subscription.js";
 
 export const getTomorrowDemand = async () => {
   const tomorrow = new Date();

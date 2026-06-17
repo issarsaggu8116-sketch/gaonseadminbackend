@@ -1,12 +1,10 @@
-import { Admin } from "../models/User.js";
+import { Admin } from "../models/Admin.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import "../models/City.js";
 
 // LOGIN ADMIN
 export const adminLogin = async (req, res) => {
-  console.log("route hit");
-
   try {
     const { email, password } = req.body;
 

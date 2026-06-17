@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import { DeliveryPartner } from "../models/DeliveryPartner.js";
 import { Zone } from "../models/Zone.js";
+import { Khata } from "../models/Khata.js";
 
 //
 //  CREATE DELIVERY PARTNER
@@ -150,6 +152,76 @@ export const deleteDeliveryPartner = async (req, res) => {
     await partner.deleteOne();
 
     res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+//
+//  GET PARTNER SALES METRICS (TODAY & TOTAL)
+//
+export const getPartnerSales = async (req, res) => {
+  try {
+    const { partnerId } = req.params;
+
+    const partner = await DeliveryPartner.findById(partnerId);
+    if (!partner) {
+      return res.status(404).json({ message: "Delivery partner not found" });
+    }
+
+    if (partner.city.toString() !== req.user.city.toString()) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+
+    // Aggregate total sales
+    const totalSalesResult = await Khata.aggregate([
+      { $match: { partner: new mongoose.Types.ObjectId(partnerId) } },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$totalPrice" },
+          items: { $sum: "$qty" }
+        }
+      }
+    ]);
+
+    // Aggregate today's sales
+    const todaySalesResult = await Khata.aggregate([
+      {
+        $match: {
+          partner: new mongoose.Types.ObjectId(partnerId),
+          deliveredAt: { $gte: startOfToday, $lte: endOfToday }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$totalPrice" },
+          items: { $sum: "$qty" }
+        }
+      }
+    ]);
+
+    const totalSales = totalSalesResult[0]?.total || 0;
+    const totalItems = totalSalesResult[0]?.items || 0;
+    const todaySales = todaySalesResult[0]?.total || 0;
+    const todayItems = todaySalesResult[0]?.items || 0;
+
+    res.json({
+      success: true,
+      partnerId,
+      partnerName: partner.name,
+      todaySales,
+      todayItems,
+      totalSales,
+      totalItems
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

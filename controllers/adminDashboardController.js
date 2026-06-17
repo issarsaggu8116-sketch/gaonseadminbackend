@@ -6,23 +6,21 @@ export const getDashboard = async (
   res
 ) => {
   try {
-    console.log("Dashboard route hit");
-
     // ✅ CITY
     const cityId = req.user.city;
 
     // 🥛 GET ALL PRODUCTS
     const products = await Product.find({
       city: cityId,
-    }).select("name currentStock");
+    }).select("name currentStock stockLimit");
 
     // 📦 FORMAT RESPONSE
     const productStockData =
       products.map((product) => ({
         productId: product._id,
         productName: product.name,
-        currentStock:
-          product.currentStock || 0,
+        currentStock: product.currentStock || 0,
+        stockLimit: product.stockLimit || 100,
       }));
 
     res.status(200).json({

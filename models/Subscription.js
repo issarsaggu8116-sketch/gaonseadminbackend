@@ -42,24 +42,24 @@ const subscriptionSchema = new mongoose.Schema(
       },
     ],
 
+    deliveryTime: {
+      type: String,
+      enum: ["morning", "evening"],
+      default: "morning",
+    },
+
     quantity: {
       type: Number,
       default: 1,
     },
 
     address: {
-      text: {
-        type: String,
-        required: true,
-      },
-      zone: {
-        type: Object,
-        required: true,
-      },
-      city: {
-        type: Object,
-        required: true,
-      },
+      city: Object,
+      zone: Object,
+      text: String,
+
+      latitude: Number,
+      longitude: Number,
     },
 
     status: {
