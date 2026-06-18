@@ -23,7 +23,7 @@ export const getSettings = async (req, res) => {
 //  UPDATE SETTINGS
 export const updateSettings = async (req, res) => {
   try {
-    const { morningDeadline, eveningDeadline } = req.body;
+    const { morningDeadline, eveningDeadline, rupeesPerKm } = req.body;
 
     let setting = await Setting.findOne({ city: req.user.city });
 
@@ -32,10 +32,14 @@ export const updateSettings = async (req, res) => {
         city: req.user.city,
         morningDeadline,
         eveningDeadline,
+        rupeesPerKm,
       });
     } else {
       setting.morningDeadline = morningDeadline;
       setting.eveningDeadline = eveningDeadline;
+      if (rupeesPerKm !== undefined) {
+        setting.rupeesPerKm = rupeesPerKm;
+      }
       await setting.save();
     }
 

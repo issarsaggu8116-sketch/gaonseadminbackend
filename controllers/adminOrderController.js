@@ -145,3 +145,65 @@ export const cancelOrder = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+//  GET ALL ORDERS FOR ADMIN CITY
+export const getAllOrders = async (req, res) => {
+  try {
+    const adminCity = req.user.city;
+    const orders = await Order.find({
+      ...getCityFilter(adminCity),
+    })
+      .populate("user", "name phone")
+      .populate("deliveredBy", "name phone")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: orders.length,
+      orders,
+    });
+  } catch (err) {
+    console.log("FETCH ALL ERROR:", err.message);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// UNASSIGN ORDER FROM PARTNER
+export const unassignOrder = async (req, res) => {
+  try {
+    const adminCity = req.user.city;
+
+    const order = await Order.findOne({
+      _id: req.params.id,
+      ...getCityFilter(adminCity),
+    }).populate("user", "name phone");
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    order.deliveredBy = null;
+    order.status = "pending";
+    await order.save();
+
+    // Notify delivery backend of unassigned order so it is broadcast to delivery partner zone room
+    try {
+      fetch("http://localhost:4001/api/delivery/today-orders/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order }),
+      }).catch((err) => console.log("Notify delivery error:", err.message));
+    } catch (err) {
+      console.log("Failed to notify delivery backend:", err.message);
+    }
+
+    res.json({
+      success: true,
+      message: "Order unassigned successfully",
+      order,
+    });
+  } catch (err) {
+    console.log("UNASSIGN ERROR:", err.message);
+    res.status(500).json({ message: err.message });
+  }
+};
