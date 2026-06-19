@@ -2,12 +2,17 @@ import { Order } from "../models/Order.js";
 import { Product } from "../models/Product.js";
 
 //  COMMON CITY FILTER
-const getCityFilter = (city) => ({
-  $or: [
-    { "address.city": city },
-    { "address.city": city.toString() },
-  ],
-});
+const getCityFilter = (city) => {
+  const cityStr = city.toString();
+  return {
+    $or: [
+      { "address.city": city },
+      { "address.city": cityStr },
+      { "address.city._id": city },
+      { "address.city._id": cityStr },
+    ],
+  };
+};
 
 
 //  GET PENDING ORDERS BY ADMIN CITY
