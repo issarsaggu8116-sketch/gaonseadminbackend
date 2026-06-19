@@ -1,4 +1,5 @@
 import { Product } from "../models/Product.js";
+import { Subscription } from "../models/Subscription.js";
 
 
 // ➕ CREATE PRODUCT
@@ -103,6 +104,9 @@ export const updateProduct = async (req, res) => {
 // ❌ DELETE PRODUCT
 export const deleteProduct = async (req, res) => {
   try {
+    // Delete all subscriptions related to this product
+    await Subscription.deleteMany({ product: req.params.id });
+
     await Product.findByIdAndDelete(req.params.id);
 
     res.json({
