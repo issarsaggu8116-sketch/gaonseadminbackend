@@ -19,6 +19,8 @@ import adminAuthRoutes from "./routes/adminAuthRoutes.js";
 import deliveryRoutes from "./routes/deliveryRoutes.js";
 import adminDashboardRoutes from "./routes/adminDashboardRoutes.js"
 import inventoryRoutes from "./routes/inventoryRoutes.js";
+import adminUserRoutes from "./routes/adminUserRoutes.js";
+
 
 
 
@@ -64,3 +66,5 @@ app.use("/api/v1/admin",adminDashboardRoutes);
 app.use("/api/v1/admin/delivery", deliveryRoutes);
 
 app.use("/api/v1/admin/inventory", inventoryRoutes);
+
+app.use("/api/v1/admin/users", adminUserRoutes);
