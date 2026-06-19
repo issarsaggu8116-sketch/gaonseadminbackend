@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { DeliveryPartner } from "../models/DeliveryPartner.js";
 import { Zone } from "../models/Zone.js";
 import { Khata } from "../models/Khata.js";
+import { Order } from "../models/Order.js";
 
 //
 //  CREATE DELIVERY PARTNER
@@ -96,6 +97,35 @@ export const loginDeliveryPartner = async (req, res) => {
 };
 
 //
+const getCurrentWeekRange = (createdAt) => {
+  const createdDate = new Date(createdAt || new Date());
+  const startOfPartner = new Date(
+    createdDate.getFullYear(),
+    createdDate.getMonth(),
+    createdDate.getDate(),
+    0, 0, 0, 0
+  );
+
+  const now = new Date();
+  let currentStart = new Date(startOfPartner);
+  
+  while (true) {
+    let nextStart = new Date(currentStart);
+    nextStart.setDate(nextStart.getDate() + 7);
+    if (nextStart > now) {
+      break;
+    }
+    currentStart = nextStart;
+  }
+  
+  let currentEnd = new Date(currentStart);
+  currentEnd.setDate(currentEnd.getDate() + 7);
+  let endOfInterval = new Date(currentEnd.getTime() - 1);
+  
+  return { start: currentStart, end: endOfInterval };
+};
+
+//
 //  GET PARTNERS
 //
 export const getDeliveryPartners = async (req, res) => {
@@ -104,7 +134,32 @@ export const getDeliveryPartners = async (req, res) => {
       city: req.user.city,
     }).populate("zone");
 
-    res.json({ success: true, partners });
+    const partnerIds = partners.map(p => p._id);
+    const orders = await Order.find({
+      deliveredBy: { $in: partnerIds },
+      status: "delivered"
+    });
+
+    const partnersWithSalary = partners.map(p => {
+      const { start, end } = getCurrentWeekRange(p.createdAt);
+      
+      const currentWeekOrders = orders.filter(o => {
+        if (!o.deliveredBy) return false;
+        return o.deliveredBy.toString() === p._id.toString();
+      }).filter(o => {
+        const deliveredDate = new Date(o.deliveredAt || o.updatedAt || o.createdAt);
+        return deliveredDate >= start && deliveredDate <= end;
+      });
+      
+      const currentWeekEarnings = currentWeekOrders.reduce((sum, o) => sum + (o.earning || 0), 0);
+      
+      return {
+        ...p.toObject(),
+        currentWeekEarnings: Number(currentWeekEarnings.toFixed(2))
+      };
+    });
+
+    res.json({ success: true, partners: partnersWithSalary });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -221,6 +276,89 @@ export const getPartnerSales = async (req, res) => {
       todayItems,
       totalSales,
       totalItems
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+//
+//  GET PARTNER SALARY WEEKS
+//
+export const getPartnerSalaryWeeks = async (req, res) => {
+  try {
+    const { partnerId } = req.params;
+
+    const partner = await DeliveryPartner.findById(partnerId);
+    if (!partner) {
+      return res.status(404).json({ message: "Delivery partner not found" });
+    }
+
+    if (partner.city.toString() !== req.user.city.toString()) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const createdDate = new Date(partner.createdAt || partner.updatedAt || new Date());
+    const startOfPartner = new Date(
+      createdDate.getFullYear(),
+      createdDate.getMonth(),
+      createdDate.getDate(),
+      0, 0, 0, 0
+    );
+
+    const now = new Date();
+    let weeks = [];
+    let currentStart = new Date(startOfPartner);
+    let weekIndex = 1;
+
+    while (currentStart <= now) {
+      let currentEnd = new Date(currentStart);
+      currentEnd.setDate(currentEnd.getDate() + 7);
+      let endOfInterval = new Date(currentEnd.getTime() - 1);
+
+      weeks.push({
+        weekNumber: weekIndex,
+        start: new Date(currentStart),
+        end: endOfInterval,
+      });
+
+      currentStart = new Date(currentEnd);
+      weekIndex++;
+    }
+
+    // Fetch all delivered orders for the partner
+    const orders = await Order.find({
+      deliveredBy: partnerId,
+      status: "delivered"
+    });
+
+    const weeksData = weeks.map(week => {
+      const weekOrders = orders.filter(order => {
+        const deliveredDate = new Date(order.deliveredAt || order.updatedAt || order.createdAt);
+        return deliveredDate >= week.start && deliveredDate <= week.end;
+      });
+
+      const earnings = weekOrders.reduce((sum, o) => sum + (o.earning || 0), 0);
+
+      const isCurrentWeek = now >= week.start && now <= week.end;
+
+      return {
+        weekNumber: week.weekNumber,
+        startDate: week.start.toISOString(),
+        endDate: week.end.toISOString(),
+        earnings: Number(earnings.toFixed(2)),
+        ordersCount: weekOrders.length,
+        label: isCurrentWeek ? `Week ${week.weekNumber} (Current)` : `Week ${week.weekNumber}`
+      };
+    });
+
+    weeksData.reverse();
+
+    res.json({
+      success: true,
+      partnerId,
+      partnerName: partner.name,
+      weeks: weeksData
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
